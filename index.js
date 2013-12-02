@@ -2,18 +2,18 @@ var browserStack = require('browserstack'),
     browserStackTunnel = require('browserstacktunnel-wrapper');
 
 var config = null,
-    bsClient = null,
-    bsTunnel = null;
+    bsClient = null;
 
 function getWorkerName(browser) {
     return [browser.os, browser.os_version, browser.browser, browser.browser_version, browser.device].join(' ').trim();
 }
 
-exports.createWorkers = function createWorkers(browsers, callback) {
+exports.createWorkers = function createWorkers(browsers, callback, workerIds) {
     if (browsers.length) {
         var browser = browsers.shift(),
-            workerName = getWorkerName(browser),
-            workerIds = arguments[2] || [];
+            workerName = getWorkerName(browser);
+
+        workerIds = workerIds || [];
 
         browser.url = 'http://' + config.TestCafe.hostname + ':' + config.TestCafe.controlPanelPort + 
             '/worker/add/' + encodeURI(workerName);
@@ -23,10 +23,10 @@ exports.createWorkers = function createWorkers(browsers, callback) {
                 workerIds.push(worker.id);
                 createWorkers(browsers, callback, workerIds);
             } else
-                console.log(err);
+                callback && callback(workerIds, err);
         });
     } else
-        callback && callback(arguments[2]);
+        callback && callback(workerIds);
 }
 
 exports.removeWorkers = function removeWorkers(workerIds, callback) {
@@ -34,26 +34,34 @@ exports.removeWorkers = function removeWorkers(workerIds, callback) {
         var workerId = workerIds.shift();
 
         bsClient.terminateWorker(workerId, function(err, data) {
-            !err ? removeWorkers(workerIds, callback) : console.log(err);
+            if(!err)
+                removeWorkers(workerIds, callback)
+            else
+                callback && callback(err);
         });
     } else
         callback && callback();
 }
 
 exports.removeAllWorkers = function removeAllWorkers(callback) {
-    var workerArg = 1,
-        workers = arguments[workerArg];
+    if (arguments.length > 1) {
+        var workers = arguments[1];
 
-    if (workerArg in arguments) {
-        bsClient.terminateWorker(workers.shift().id, function(err, data) {
-            if (!err)
-                workers.length ? removeAllWorkers(callback, workers) : callback && callback();
-            else
-                console.log(err);
-        });
+        if (workers.length) {
+            bsClient.terminateWorker(workers.shift().id, function(err, data) {
+                if (!err)
+                    removeAllWorkers(callback, workers);
+                else
+                    callback && callback(err);
+            });
+        } else
+            callback && callback();
     } else {
         bsClient.getWorkers(function(err, workers) {
-            !err ? removeAllWorkers(callback, workers) : console.log(err);
+            if(!err)
+                removeAllWorkers(callback, workers);
+            else
+                callback && callback(err);
         });
     }
 }
@@ -67,7 +75,7 @@ exports.init = function(data, callback) {
     });
 
     if (config.BrowserStack.localTesting) {
-        bsTunnel = new browserStackTunnel({
+        var bsTunnel = new browserStackTunnel({
             key: config.BrowserStack.accessKey,
             hosts: [{
                 name: config.TestCafe.hostname,
@@ -78,13 +86,7 @@ exports.init = function(data, callback) {
             }]
         });
 
-        bsTunnel.start(function(err) {
-            if (!err) {
-                console.log('Press Ctrl-C to close tunnel');
-                callback && callback();
-            } else
-                console.log(err);
-        });
-    } else if (callback)
-        callback();
+        bsTunnel.start(callback);
+    } else 
+        callback && callback();
 }
