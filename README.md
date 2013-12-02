@@ -71,11 +71,11 @@ This example demonstrates how to create a new worker for running tests in Chrome
     	}
     }, function() {
     	testCafeBrowserStack.createWorkers([{
-    		os: "OS X",
-    		os_version: "Snow Leopard",
-    		browser: "chrome",
+    		os: 'OS X',
+    		os_version: 'Snow Leopard',
+    		browser: 'chrome',
     		browser_version: '14.0',
-    		device: "null"
+    		device: null
     	}], function(e) {
     		console.log('All workers created!')
     	});
