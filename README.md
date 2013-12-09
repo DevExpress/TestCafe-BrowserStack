@@ -77,6 +77,6 @@ This example demonstrates how to create a new worker for running tests in Chrome
     		browser_version: '14.0',
     		device: null
     	}], function(e) {
-    		console.log('All workers created!')
+    		console.log('All workers are created!')
     	});
     });
