@@ -5,6 +5,11 @@ This module allows to enrich the TestCafe browsers list by adding remote workers
 
 The module contains a set of functions that help to initialise, create and remove a remote worker.
 
+Installation
+------------
+
+`npm install testcafe-browserstack`
+
 init ( config, callback )
 -------------------------
 
