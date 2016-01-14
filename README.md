@@ -79,7 +79,7 @@ This example demonstrates how to create a new worker for running tests in Chrome
     		os: 'OS X',
     		os_version: 'Snow Leopard',
     		browser: 'chrome',
-    		browser_version: '14.0',
+    		browser_version: '40.0',
     		device: null
     	}], function(e) {
     		console.log('All workers are created!')
