@@ -85,3 +85,7 @@ This example demonstrates how to create a new worker for running tests in Chrome
     		console.log('All workers are created!')
     	});
     });
+    
+Check if a required browser is supported by BrowserStack: a list of supported browsers.
+
+https://www.browserstack.com/list-of-browsers-and-platforms?product=live
