@@ -39,7 +39,8 @@ Creates new BrowserStack workers and returns an array of workers ids.
 		* `browser`: The browser name
 		* `browser_version`: The browser version
 		* `device`: The device name
-* `callback`( `function( workerIds )` ): Invokes when when workers are created
+		* `worker_name`: The worker name that will be used by TestCafe to identify the browser for test execution
+* `callback`( `function( workerIds )` ): Invoked when workers are created
 	* `workerIds`: An array of workers id
 
 removeWorkers( workerIds, callback )
