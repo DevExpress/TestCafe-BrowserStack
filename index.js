@@ -4,16 +4,18 @@ var browserStack = require('browserstack'),
 var config = null,
     bsClient = null;
 
-function getWorkerName(browser) {
+function generateWorkerName(browser) {
     return [browser.os, browser.os_version, browser.browser, browser.browser_version, browser.device].join(' ').trim();
 }
 
 exports.createWorkers = function createWorkers(browsers, callback, workerIds) {
     if (browsers.length) {
         var browser = browsers.shift(),
-            workerName = getWorkerName(browser);
+            workerName = browser.worker_name || generateWorkerName(browser);
 
         workerIds = workerIds || [];
+
+        delete browser.worker_name;
 
         browser.url = 'http://' + config.TestCafe.hostname + ':' + config.TestCafe.controlPanelPort + 
             '/worker/add/' + encodeURI(workerName);
@@ -27,28 +29,28 @@ exports.createWorkers = function createWorkers(browsers, callback, workerIds) {
         });
     } else
         callback && callback(workerIds);
-}
+};
 
 exports.removeWorkers = function removeWorkers(workerIds, callback) {
     if (workerIds.length) {
         var workerId = workerIds.shift();
 
-        bsClient.terminateWorker(workerId, function(err, data) {
+        bsClient.terminateWorker(workerId, function(err) {
             if(!err)
-                removeWorkers(workerIds, callback)
+                removeWorkers(workerIds, callback);
             else
                 callback && callback(err);
         });
     } else
         callback && callback();
-}
+};
 
 exports.removeAllWorkers = function removeAllWorkers(callback) {
     if (arguments.length > 1) {
         var workers = arguments[1];
 
         if (workers.length) {
-            bsClient.terminateWorker(workers.shift().id, function(err, data) {
+            bsClient.terminateWorker(workers.shift().id, function(err) {
                 if (!err)
                     removeAllWorkers(callback, workers);
                 else
@@ -64,7 +66,7 @@ exports.removeAllWorkers = function removeAllWorkers(callback) {
                 callback && callback(err);
         });
     }
-}
+};
 
 exports.init = function(data, callback) {
     config = data;
@@ -89,4 +91,4 @@ exports.init = function(data, callback) {
         bsTunnel.start(callback);
     } else 
         callback && callback();
-}
+};
