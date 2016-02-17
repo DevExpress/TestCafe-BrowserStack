@@ -2,7 +2,7 @@
     "name": "testcafe-browserstack",
     "author": "DevExpress (www.devexpress.com)",
     "description": "Add remote workers from the BrowserStack web service to the TestCafe.",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "keywords": [
         "TestCafe",
         "BrowserStack",
@@ -16,7 +16,8 @@
     },
     "dependencies": {
         "browserstack": ">= 1.0.0",
-        "browserstacktunnel-wrapper": ">= 1.1.1"
+        "browserstacktunnel-wrapper": ">= 1.1.1",
+        "async": "1.5.2"
     },
     "repository": {
         "type": "git",
