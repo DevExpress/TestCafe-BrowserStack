@@ -1,5 +1,6 @@
 var browserStack = require('browserstack'),
-    browserStackTunnel = require('browserstacktunnel-wrapper');
+    browserStackTunnel = require('browserstacktunnel-wrapper'),
+    async = require('async');
 
 var config = null,
     bsClient = null;
@@ -8,64 +9,44 @@ function generateWorkerName(browser) {
     return [browser.os, browser.os_version, browser.browser, browser.browser_version, browser.device].join(' ').trim();
 }
 
-exports.createWorkers = function createWorkers(browsers, callback, workerIds) {
-    if (browsers.length) {
-        var browser = browsers.shift(),
-            workerName = browser.worker_name || generateWorkerName(browser);
+exports.createWorkers = function createWorkers(browsers, callback) {
+    async.map(browsers, function(browser, callback) {
+        var workerName = browser.worker_name || generateWorkerName(browser),
+            browserInfo = {
+                os: browser.os,
+                os_version: browser.os_version,
+                browser: browser.browser,
+                browser_version: browser.browser_version,
+                device: browser.device,
+                url: 'http://' + config.TestCafe.hostname + ':' + config.TestCafe.controlPanelPort +
+                     '/worker/add/' + encodeURI(workerName)
+            };
 
-        workerIds = workerIds || [];
-
-        delete browser.worker_name;
-
-        browser.url = 'http://' + config.TestCafe.hostname + ':' + config.TestCafe.controlPanelPort + 
-            '/worker/add/' + encodeURI(workerName);
-
-        bsClient.createWorker(browser, function(err, worker) {
-            if (!err) {
-                workerIds.push(worker.id);
-                createWorkers(browsers, callback, workerIds);
-            } else
-                callback && callback(workerIds, err);
+        bsClient.createWorker(browserInfo, function(err, worker) {
+            callback(err, !err && worker.id);
         });
-    } else
-        callback && callback(workerIds);
+    }, function(err, workerIds) {
+        callback && callback(workerIds, err);
+    });
 };
 
 exports.removeWorkers = function removeWorkers(workerIds, callback) {
-    if (workerIds.length) {
-        var workerId = workerIds.shift();
-
+    async.map(workerIds, function(workerId, callback) {
         bsClient.terminateWorker(workerId, function(err) {
-            if(!err)
-                removeWorkers(workerIds, callback);
-            else
-                callback && callback(err);
+            callback && callback(err);
         });
-    } else
-        callback && callback();
+    }, function(err) {
+        callback && callback(err);
+    });
 };
 
 exports.removeAllWorkers = function removeAllWorkers(callback) {
-    if (arguments.length > 1) {
-        var workers = arguments[1];
-
-        if (workers.length) {
-            bsClient.terminateWorker(workers.shift().id, function(err) {
-                if (!err)
-                    removeAllWorkers(callback, workers);
-                else
-                    callback && callback(err);
-            });
-        } else
-            callback && callback();
-    } else {
-        bsClient.getWorkers(function(err, workers) {
-            if(!err)
-                removeAllWorkers(callback, workers);
-            else
-                callback && callback(err);
-        });
-    }
+    bsClient.getWorkers(function(err, workers) {
+        if(!err)
+            exports.removeWorkers(workers.map(function(worker) { return worker.id; }), callback);
+        else
+            callback && callback(err);
+    });
 };
 
 exports.init = function(data, callback) {
