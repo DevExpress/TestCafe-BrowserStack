@@ -19,7 +19,8 @@ Module initialization
 	* `TestCafe`: TestCafe Configuration
 		* `hostname`: The hostname of your computer
 		* `controlPanelPort`: The port number where you can access TestCafe Control Panel
-		* `servicePort`: The port number used by TestCafe to perform testing
+		* `servicePort1`: The number of the first port used to perform testing
+		* `servicePort2`: The number of the second port used to perform testing
 	* `BrowserStack`: BrowserStack Configuration
 		* `username`: Your BrowserStack username
 		* `password`: Your BrowserStack password
@@ -67,7 +68,8 @@ This example demonstrates how to create a new worker for running tests in Chrome
     	TestCafe: {
     		hostname: '127.0.0.1',
     		controlPanelPort: 1337,
-    		servicePort: 1338
+    		servicePort1: 1338,
+    		servicePort2: 1339
     	},
     	BrowserStack: {
     		username: 'username',
