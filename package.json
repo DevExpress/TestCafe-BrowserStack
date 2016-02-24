@@ -2,7 +2,7 @@
     "name": "testcafe-browserstack",
     "author": "DevExpress (www.devexpress.com)",
     "description": "Add remote workers from the BrowserStack web service to the TestCafe.",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "keywords": [
         "TestCafe",
         "BrowserStack",

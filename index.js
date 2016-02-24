@@ -65,7 +65,10 @@ exports.init = function(data, callback) {
                 port: config.TestCafe.controlPanelPort
             }, {
                 name: config.TestCafe.hostname,
-                port: config.TestCafe.servicePort
+                port: config.TestCafe.servicePort1
+            }, {
+                name: config.TestCafe.hostname,
+                port: config.TestCafe.servicePort2
             }]
         });
 
