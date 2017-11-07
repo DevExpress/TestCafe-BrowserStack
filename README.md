@@ -61,33 +61,40 @@ Example
 =======
 
 This example demonstrates how to create a new worker for running tests in Chrome with the OS X Snow Leopard operating system. The worker is created in a local TestCafe instance.
+```js
+var testCafeBrowserStack = require('testcafe-browserstack');
 
-    var testCafeBrowserStack = require('testcafe-browserstack');
-    
-    testCafeBrowserStack.init({
-    	TestCafe: {
-    		hostname: '127.0.0.1',
-    		controlPanelPort: 1337,
-    		servicePort1: 1338,
-    		servicePort2: 1339
-    	},
-    	BrowserStack: {
-    		username: 'username',
-    		password: 'password',
-    		accessKey: 'accessKey',
-    		localTesting: true
-    	}
-    }, function() {
-    	testCafeBrowserStack.createWorkers([{
-    		os: 'OS X',
-    		os_version: 'Snow Leopard',
-    		browser: 'chrome',
-    		browser_version: '40.0',
-    		device: null
-    	}], function(e) {
-    		console.log('All workers are created!')
-    	});
-    });
+testCafeBrowserStack.init({
+    TestCafe: {
+        hostname: '127.0.0.1',
+        controlPanelPort: 1337,
+        servicePort1: 1338,
+        servicePort2: 1339
+    },
+    BrowserStack: {
+        username: 'username',
+        password: 'password',
+        accessKey: 'accessKey',
+        localTesting: true
+    }
+}, function(err) {
+    if (!err) {
+        testCafeBrowserStack.createWorkers([{
+            os: 'OS X',
+            os_version: 'Snow Leopard',
+            browser: 'chrome',
+            browser_version: 'latest',
+            device: null
+        }], function(workerIds, err) {
+            if (err)
+                console.error(err);
+            else
+                console.log('All workers are created!')
+        });
+    } else
+        console.error(err);
+});
+```
     
 Check if a required browser is supported by BrowserStack: a list of supported browsers.
 
