@@ -62,13 +62,16 @@ exports.init = function(data, callback) {
             key: config.BrowserStack.accessKey,
             hosts: [{
                 name: config.TestCafe.hostname,
-                port: config.TestCafe.controlPanelPort
+                port: config.TestCafe.controlPanelPort,
+                sslFlag: 0
             }, {
                 name: config.TestCafe.hostname,
-                port: config.TestCafe.servicePort1
+                port: config.TestCafe.servicePort1,
+                sslFlag: 0
             }, {
                 name: config.TestCafe.hostname,
-                port: config.TestCafe.servicePort2
+                port: config.TestCafe.servicePort2,
+                sslFlag: 0
             }]
         });
 
